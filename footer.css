@@ -1,0 +1,65 @@
+/* Footer */
+.device-footer {
+    text-align: center;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 255, 204, 0.1);
+}
+
+@media (min-width: 640px) {
+    .device-footer {
+        padding-top: 10px;
+    }
+}
+
+.footer-glyphs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 640px) {
+    .footer-glyphs {
+        gap: 15px;
+        margin-bottom: 5px;
+    }
+}
+
+.footer-glyph {
+    width: 6px;
+    height: 6px;
+    background: var(--alien-primary);
+    opacity: 0.3;
+    animation: footerPulse 2s ease-in-out infinite;
+}
+
+@media (min-width: 640px) {
+    .footer-glyph {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+.footer-glyph:nth-child(1) { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.footer-glyph:nth-child(2) { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); animation-delay: 0.3s; }
+.footer-glyph:nth-child(3) { border-radius: 50%; animation-delay: 0.6s; }
+.footer-glyph:nth-child(4) { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); animation-delay: 0.9s; }
+.footer-glyph:nth-child(5) { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); animation-delay: 1.2s; }
+
+@keyframes footerPulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.8; }
+}
+
+.footer-text {
+    font-size: 0.5rem;
+    color: rgba(0, 255, 204, 0.3);
+    letter-spacing: 2px;
+}
+
+@media (min-width: 640px) {
+    .footer-text {
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+    }
+}

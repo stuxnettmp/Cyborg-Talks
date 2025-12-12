@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.alien-title {
+    font-family: 'Orbitron', sans-serif;
+}
+
+:root {
+    --alien-primary: #00ffcc;
+    --alien-secondary: #00ff88;
+    --alien-accent: #ff00ff;
+    --alien-energy: #00ffff;
+    --alien-warning: #ff6600;
+    --alien-bio: #88ff00;
+    --alien-bg: #020208;
+}
+
+html, body {
+    background: var(--alien-bg);
+    overflow-x: hidden;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}

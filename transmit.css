@@ -1,0 +1,217 @@
+/* TRANSMIT BUTTON - Alien Orb */
+.transmit-section {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+@media (min-width: 640px) {
+    .transmit-section {
+        margin: 25px 0;
+    }
+}
+
+.transmit-btn {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+        rgba(0, 60, 60, 0.9) 0%,
+        rgba(0, 30, 40, 0.95) 50%,
+        rgba(0, 10, 20, 1) 100%);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 0 30px rgba(0, 255, 204, 0.3),
+        inset 0 0 30px rgba(0, 255, 204, 0.1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+@media (min-width: 640px) {
+    .transmit-btn {
+        width: 140px;
+        height: 140px;
+        box-shadow:
+            0 0 40px rgba(0, 255, 204, 0.3),
+            inset 0 0 40px rgba(0, 255, 204, 0.1);
+    }
+}
+
+.transmit-btn::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+        var(--alien-primary),
+        var(--alien-energy),
+        var(--alien-accent),
+        var(--alien-primary));
+    z-index: -1;
+    animation: rotateGlow 3s linear infinite;
+}
+
+.transmit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+        rgba(0, 60, 60, 0.9) 0%,
+        rgba(0, 30, 40, 0.95) 50%,
+        rgba(0, 10, 20, 1) 100%);
+}
+
+@media (min-width: 640px) {
+    .transmit-btn::after {
+        inset: 5px;
+    }
+}
+
+@keyframes rotateGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.transmit-inner {
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 40%,
+        rgba(0, 255, 204, 0.2) 0%,
+        rgba(0, 100, 100, 0.1) 50%,
+        transparent 70%);
+    border: 2px solid rgba(0, 255, 204, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .transmit-inner {
+        inset: 15px;
+    }
+}
+
+.transmit-icon {
+    font-size: 1.5rem;
+    color: var(--alien-primary);
+    text-shadow: 0 0 20px var(--alien-primary);
+    margin-bottom: 3px;
+    transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+    .transmit-icon {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+}
+
+.transmit-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.55rem;
+    color: var(--alien-primary);
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px var(--alien-primary);
+}
+
+@media (min-width: 640px) {
+    .transmit-text {
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+    }
+}
+
+.transmit-subtext {
+    font-size: 0.4rem;
+    color: rgba(0, 255, 204, 0.5);
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+@media (min-width: 640px) {
+    .transmit-subtext {
+        font-size: 0.5rem;
+    }
+}
+
+.transmit-btn:hover .transmit-inner {
+    background: radial-gradient(circle at 40% 40%,
+        rgba(0, 255, 204, 0.3) 0%,
+        rgba(0, 100, 100, 0.2) 50%,
+        transparent 70%);
+    border-color: var(--alien-primary);
+}
+
+.transmit-btn:active, .transmit-btn.active {
+    transform: scale(0.95);
+}
+
+.transmit-btn.active .transmit-inner {
+    background: radial-gradient(circle at 40% 40%,
+        rgba(255, 150, 0, 0.4) 0%,
+        rgba(255, 100, 0, 0.2) 50%,
+        transparent 70%);
+    border-color: var(--alien-warning);
+}
+
+.transmit-btn.active .transmit-icon,
+.transmit-btn.active .transmit-text {
+    color: var(--alien-warning);
+    text-shadow: 0 0 30px var(--alien-warning);
+}
+
+.transmit-btn.active::before {
+    background: conic-gradient(from 0deg,
+        var(--alien-warning),
+        #ff0000,
+        var(--alien-warning),
+        #ff0000);
+    animation: rotateGlow 0.5s linear infinite;
+}
+
+/* Energy waves when transmitting */
+.energy-waves {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.energy-wave {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border: 2px solid var(--alien-warning);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+@media (min-width: 640px) {
+    .energy-wave {
+        width: 140px;
+        height: 140px;
+    }
+}
+
+.energy-wave.active {
+    animation: waveExpand 1s ease-out infinite;
+}
+
+.energy-wave:nth-child(2) { animation-delay: 0.3s; }
+.energy-wave:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes waveExpand {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.5); opacity: 0; }
+}

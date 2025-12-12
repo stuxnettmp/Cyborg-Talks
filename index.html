@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CYBORG_COMMUNICATION | Alien Neural Link</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" integrity="sha384-WrpyCFNrMmN/IC7KmMNiXxIouXEFpoDIuJ2P+ys++uYEzegAW2MSl+X6Unsahaij" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js" integrity="sha384-ZFaJg22VvVm4+3ZqY9eRIHGmqdEQb+c7XO+0IKspqdtPGFu6xRiPnK8xeNA//kQJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="background.css">
+    <link rel="stylesheet" href="device.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="status.css">
+    <link rel="stylesheet" href="transmit.css">
+    <link rel="stylesheet" href="inputs.css">
+    <link rel="stylesheet" href="log.css">
+    <link rel="stylesheet" href="controls.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="notifications.css">
+</head>
+<body>
+    <!-- Background layers -->
+    <div class="space-bg"></div>
+    <div class="nebula"></div>
+    <div class="stars" id="stars"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <!-- DNA Strands -->
+    <div class="dna-strand left" id="dnaLeft"></div>
+    <div class="dna-strand right" id="dnaRight"></div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Main Device -->
+        <div class="device-container">
+            <div class="device-inner">
+                <div class="holo-overlay"></div>
+                
+                <!-- Bio-organic corners -->
+                <div class="bio-corner tl"></div>
+                <div class="bio-corner tr"></div>
+                <div class="bio-corner bl"></div>
+                <div class="bio-corner br"></div>
+
+                <!-- Header -->
+                <div class="alien-header">
+                    <div class="glyph-container">
+                        <div class="alien-glyph"></div>
+                        <div class="alien-glyph"></div>
+                        <div class="alien-glyph"></div>
+                    </div>
+                    <h1 class="main-title alien-title">CYBORG_COMMUNICATION</h1>
+                    <p class="subtitle">NEURAL-LINK TRANSMISSION ARRAY</p>
+                </div>
+
+                <!-- Status Panel -->
+                <div class="status-panel">
+                    <div class="neural-status">
+                        <div class="neural-orb disconnected" id="statusOrb"></div>
+                        <span class="status-text" id="statusText">INITIALIZING NEURAL LINK...</span>
+                        <span class="timestamp" id="timestamp">--:--:--</span>
+                    </div>
+
+                    <!-- Waveform Visualizer -->
+                    <div class="waveform-container" id="visualizer"></div>
+
+                    <div class="transmission-status" id="transmissionStatus">
+                        ◇ AWAITING SIGNAL ◇
+                    </div>
+                </div>
+
+                <!-- Frequency Input -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon"></div>
+                        <span>Frequency Channel</span>
+                    </div>
+                    <div class="freq-input-container">
+                        <input type="text" id="frequencyInput" class="alien-input" placeholder="ENTER FREQUENCY..." value="ANDROMEDA-GALAXY-01">
+                        <button id="setFrequencyBtn" class="sync-btn">SYNC</button>
+                    </div>
+                    <div class="freq-display">
+                        <div class="freq-dot"></div>
+                        <span class="freq-text" id="currentFreqDisplay">TUNED: ANDROMEDA-GALAXY-01</span>
+                    </div>
+                </div>
+
+                <!-- Callsign Input -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon" style="border-color: var(--alien-energy);"></div>
+                        <span style="color: var(--alien-energy);">Entity Identifier</span>
+                    </div>
+                    <input type="text" id="callsign" class="alien-input" placeholder="ENTER CALLSIGN..." style="border-color: rgba(0, 255, 255, 0.3);">
+                </div>
+
+                <!-- Message Log -->
+                <div class="input-group">
+                    <div class="input-label">
+                        <div class="label-icon"></div>
+                        <span>Transmission Log</span>
+                    </div>
+                    <div class="message-log" id="messageLog">
+                        <div class="placeholder-text">// AWAITING TRANSMISSIONS //</div>
+                    </div>
+                </div>
+
+                <!-- Transmit Button -->
+                <div class="transmit-section">
+                    <div class="energy-waves" id="energyWaves">
+                        <div class="energy-wave"></div>
+                        <div class="energy-wave"></div>
+                        <div class="energy-wave"></div>
+                    </div>
+                    <button class="transmit-btn" id="pttButton">
+                        <div class="transmit-inner">
+                            <div class="transmit-icon">⬡</div>
+                            <div class="transmit-text">TRANSMIT</div>
+                            <div class="transmit-subtext">HOLD TO SPEAK</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Volume Control -->
+                <div class="volume-control">
+                    <span class="volume-icon">◁</span>
+                    <input type="range" id="volume" class="volume-slider" min="0" max="100" value="80">
+                    <span class="volume-icon">▷</span>
+                    <span class="volume-value" id="volumeValue">80%</span>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value tx" id="txCount">0</div>
+                        <div class="stat-label">TX SENT</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value rx" id="rxCount">0</div>
+                        <div class="stat-label">RX RECV</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value active" id="activeUsers">0</div>
+                        <div class="stat-label">ACTIVE</div>
+                    </div>
+                </div>
+
+                <!-- Buy Me a Coffee -->
+                <div class="coffee-section">
+                    <button id="coffeeBtn" class="coffee-btn">BUY ME A COFFEE</button>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-section">
+                    <a href="https://www.facebook.com/nishant.singh.chauha8" class="social-link" target="_blank">FB</a>
+                    <a href="https://www.instagram.com/stuxnet.tmp/" class="social-link" target="_blank">IG</a>
+                    <a href="https://x.com/Nishant43718423" class="social-link" target="_blank">X</a>
+                    <a href="https://github.com/stuxnettmp" class="social-link" target="_blank">GH</a>
+                </div>
+
+                <!-- Footer -->
+                <div class="device-footer">
+                    <div class="footer-glyphs">
+                        <div class="footer-glyph"></div>
+                        <div class="footer-glyph"></div>
+                        <div class="footer-glyph"></div>
+                        <div class="footer-glyph"></div>
+                        <div class="footer-glyph"></div>
+                    </div>
+                    <div class="footer-text">CYBORG_TECH NEURAL SYSTEMS v9.7.3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

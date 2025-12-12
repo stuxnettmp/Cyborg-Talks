@@ -1,0 +1,186 @@
+/* Status display panel */
+.status-panel {
+    background: linear-gradient(180deg,
+        rgba(0, 255, 204, 0.05) 0%,
+        rgba(0, 0, 0, 0.5) 100%);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (min-width: 640px) {
+    .status-panel {
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+.status-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.1), transparent);
+    animation: scanLine 4s linear infinite;
+}
+
+@keyframes scanLine {
+    0% { left: -50%; }
+    100% { left: 100%; }
+}
+
+/* Neural status indicator */
+.neural-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+    .neural-status {
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: nowrap;
+    }
+}
+
+.neural-orb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .neural-orb {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.neural-orb::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0.5;
+    animation: orbRing 2s ease-out infinite;
+}
+
+.neural-orb.connected {
+    background: radial-gradient(circle at 30% 30%, #88ffcc, var(--alien-primary));
+    box-shadow: 0 0 20px var(--alien-primary);
+    color: var(--alien-primary);
+}
+
+.neural-orb.disconnected {
+    background: radial-gradient(circle at 30% 30%, #ff6666, #ff0000);
+    box-shadow: 0 0 20px #ff0000;
+    color: #ff0000;
+}
+
+.neural-orb.transmitting {
+    background: radial-gradient(circle at 30% 30%, #ffcc00, var(--alien-warning));
+    box-shadow: 0 0 30px var(--alien-warning);
+    color: var(--alien-warning);
+    animation: transmitGlow 0.3s ease-in-out infinite;
+}
+
+@keyframes orbRing {
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes transmitGlow {
+    0%, 100% { box-shadow: 0 0 20px var(--alien-warning); }
+    50% { box-shadow: 0 0 40px var(--alien-warning), 0 0 60px var(--alien-warning); }
+}
+
+.status-text {
+    color: rgba(0, 255, 204, 0.7);
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+    .status-text {
+        font-size: 0.75rem;
+    }
+}
+
+.timestamp {
+    color: rgba(0, 255, 204, 0.5);
+    font-size: 0.6rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .timestamp {
+        font-size: 0.7rem;
+    }
+}
+
+/* Waveform visualizer */
+.waveform-container {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    margin: 12px 0;
+    position: relative;
+}
+
+@media (min-width: 640px) {
+    .waveform-container {
+        height: 60px;
+        gap: 3px;
+        margin: 15px 0;
+    }
+}
+
+.wave-bar {
+    width: 3px;
+    background: linear-gradient(to top,
+        var(--alien-primary) 0%,
+        var(--alien-energy) 50%,
+        var(--alien-accent) 100%);
+    border-radius: 2px;
+    transition: height 0.05s ease;
+    box-shadow: 0 0 8px var(--alien-primary);
+}
+
+@media (min-width: 640px) {
+    .wave-bar {
+        width: 4px;
+        box-shadow: 0 0 10px var(--alien-primary);
+    }
+}
+
+.transmission-status {
+    text-align: center;
+    color: rgba(0, 255, 204, 0.4);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+}
+
+@media (min-width: 640px) {
+    .transmission-status {
+        font-size: 0.75rem;
+    }
+}

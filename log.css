@@ -1,0 +1,78 @@
+/* Message log */
+.message-log {
+    background: rgba(0, 10, 20, 0.8);
+    border: 1px solid rgba(0, 255, 204, 0.2);
+    border-radius: 10px;
+    height: 80px;
+    overflow-y: auto;
+    padding: 8px;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+    .message-log {
+        border-radius: 12px;
+        height: 100px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+}
+
+.message-log::-webkit-scrollbar {
+    width: 4px;
+}
+
+.message-log::-webkit-scrollbar-track {
+    background: rgba(0, 255, 204, 0.1);
+    border-radius: 2px;
+}
+
+.message-log::-webkit-scrollbar-thumb {
+    background: var(--alien-primary);
+    border-radius: 2px;
+}
+
+.log-entry {
+    padding: 5px 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 0.65rem;
+}
+
+@media (min-width: 640px) {
+    .log-entry {
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        font-size: 0.75rem;
+    }
+}
+
+.log-entry.incoming {
+    background: linear-gradient(90deg, rgba(255, 0, 255, 0.15), transparent);
+    border-left: 2px solid var(--alien-accent);
+}
+
+.log-entry.outgoing {
+    background: linear-gradient(90deg, rgba(0, 255, 136, 0.15), transparent);
+    border-left: 2px solid var(--alien-secondary);
+}
+
+.log-entry.system {
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), transparent);
+    border-left: 2px solid var(--alien-energy);
+    color: var(--alien-energy);
+}
+
+.placeholder-text {
+    color: rgba(0, 255, 204, 0.3);
+    text-align: center;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+}
+
+@media (min-width: 640px) {
+    .placeholder-text {
+        font-size: 0.7rem;
+    }
+}
