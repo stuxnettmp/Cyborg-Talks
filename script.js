@@ -334,6 +334,12 @@
         function playReceivedAudio(base64Audio) {
             const audio = new Audio('data:audio/webm;base64,' + base64Audio);
             audio.volume = state.volume;
+            audio.onended = () => {
+                pttButton.classList.remove('receiving');
+                Array.from(energyWaves).forEach(wave => wave.classList.remove('receiving'));
+            };
+            pttButton.classList.add('receiving');
+            Array.from(energyWaves).forEach(wave => wave.classList.add('receiving'));
             audio.play().catch(e => console.error('Playback error:', e));
         }
 

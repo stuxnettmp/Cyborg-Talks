@@ -42,7 +42,7 @@ Just for fun and to learn. It's cool to see how MQTT can handle real-time stuff,
 
 ## Donate or Support
 
-If you dig it and want to buy me a coffee, here's my UPI ID: stuxnet@paytm (copy it from the app too).
+If you dig it and want to buy me a coffee, here's my UPI ID: nishant.9514-3@waaxis (copy it from the app too).
 
 ## Find Me Online
 

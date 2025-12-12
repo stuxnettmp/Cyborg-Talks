@@ -215,3 +215,39 @@
     0% { transform: scale(1); opacity: 0.8; }
     100% { transform: scale(2.5); opacity: 0; }
 }
+
+/* Receiving animation */
+.transmit-btn.receiving .transmit-inner {
+    background: radial-gradient(circle at 40% 40%,
+        rgba(0, 255, 0, 0.4) 0%,
+        rgba(0, 150, 0, 0.2) 50%,
+        transparent 70%);
+    border-color: rgba(0, 255, 0, 0.8);
+}
+
+.transmit-btn.receiving .transmit-icon,
+.transmit-btn.receiving .transmit-text {
+    color: rgba(0, 255, 0, 0.8);
+    text-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+}
+
+.transmit-btn.receiving::before {
+    background: conic-gradient(from 0deg,
+        rgba(0, 255, 0, 0.8),
+        rgba(0, 150, 0, 0.8),
+        rgba(0, 255, 0, 0.8),
+        rgba(0, 150, 0, 0.8));
+    animation: rotateGlow 0.5s linear infinite;
+}
+
+.energy-wave.receiving {
+    animation: waveContract 1s ease-out infinite;
+}
+
+.energy-wave:nth-child(2).receiving { animation-delay: 0.3s; }
+.energy-wave:nth-child(3).receiving { animation-delay: 0.6s; }
+
+@keyframes waveContract {
+    0% { transform: scale(2.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
