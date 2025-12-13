@@ -165,10 +165,19 @@
     box-shadow: 0 0 8px var(--alien-primary);
 }
 
+.waveform-container.receiving .wave-bar {
+    background: linear-gradient(to top, #00ff00 0%, #00ff00 50%, #00ff00 100%);
+    box-shadow: 0 0 8px #00ff00;
+}
+
 @media (min-width: 640px) {
     .wave-bar {
         width: 4px;
         box-shadow: 0 0 10px var(--alien-primary);
+    }
+
+    .waveform-container.receiving .wave-bar {
+        box-shadow: 0 0 10px #00ff00;
     }
 }
 

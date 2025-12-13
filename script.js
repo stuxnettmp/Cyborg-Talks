@@ -67,6 +67,7 @@
         const state = {
             connected: false,
             transmitting: false,
+            playing: false,
             currentChannel: 'ANDROMEDA-GALAXY-01',
             callsign: 'CYBORG-' + Math.random().toString(36).substr(2, 4).toUpperCase(),
             txCount: 0,
@@ -74,8 +75,10 @@
             volume: 0.8,
             mediaRecorder: null,
             audioChunks: [],
+            activeAudios: [],
             client: null
         };
+        let userInteracted = false;
 
         // DOM Elements
         const statusOrb = document.getElementById('statusOrb');
@@ -95,11 +98,11 @@
 
         // Input validation functions
         function sanitizeCallsign(value) {
-            return value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').substring(0, 10);
+            return value.trim();
         }
 
         function sanitizeChannel(value) {
-            return value.trim().toUpperCase().replace(/\s+/g, '-').replace(/[^A-Z0-9-]/g, '').substring(0, 20);
+            return value.trim();
         }
 
         // Initialize callsign
@@ -121,34 +124,34 @@
         });
 
         // Frequency selection
-        function setFrequency() {
+        async function setFrequency() {
             const newFrequency = sanitizeChannel(frequencyInput.value) || 'ANDROMEDA-GALAXY-01';
             frequencyInput.value = newFrequency;
-            
+
             if (newFrequency === state.currentChannel) return;
-            
+
             const oldChannel = state.currentChannel;
             state.currentChannel = newFrequency;
             currentFreqDisplay.textContent = `TUNED: ${newFrequency}`;
-            
+
             if (state.client && state.connected) {
                 state.client.unsubscribe(`cyborg/${oldChannel}/audio`);
                 state.client.unsubscribe(`cyborg/${oldChannel}/presence`);
                 state.client.subscribe(`cyborg/${state.currentChannel}/audio`);
                 state.client.subscribe(`cyborg/${state.currentChannel}/presence`);
-                
+
                 state.client.publish(`cyborg/${state.currentChannel}/presence`, JSON.stringify({
                     type: 'join',
                     callsign: state.callsign,
                     timestamp: Date.now()
                 }));
-                
+
                 addMessage('SYSTEM', `Frequency synced to ${state.currentChannel}`, 'system');
             }
-            
-            playTone(600, 80);
-            setTimeout(() => playTone(900, 80), 100);
-            setTimeout(() => playTone(1200, 120), 200);
+
+            await playTone(600, 80);
+            setTimeout(async () => await playTone(900, 80), 100);
+            setTimeout(async () => await playTone(1200, 120), 200);
         }
         
         setFrequencyBtn.addEventListener('click', setFrequency);
@@ -166,44 +169,58 @@
 
         // Audio context
         let audioContext;
-        function initAudio() {
+        async function initAudio() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('AudioContext created, state:', audioContext.state);
+            }
+            if (audioContext.state === 'suspended' && userInteracted) {
+                console.log('Attempting to resume AudioContext, current state:', audioContext.state);
+                try {
+                    await audioContext.resume();
+                    console.log('AudioContext resumed successfully, new state:', audioContext.state);
+                } catch (err) {
+                    console.error('Failed to resume AudioContext:', err);
+                }
+            } else {
+                console.log('AudioContext state:', audioContext.state, 'userInteracted:', userInteracted);
             }
         }
 
-        function playTone(frequency, duration, type = 'sine') {
-            initAudio();
+        async function playTone(frequency, duration, type = 'sine') {
+            await initAudio();
+            console.log('playTone called, audioContext state:', audioContext.state);
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
+
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            
+
             oscillator.frequency.value = frequency;
             oscillator.type = type;
-            gainNode.gain.setValueAtTime(0.1 * state.volume, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.3 * state.volume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-            
+
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + duration / 1000);
         }
 
-        function playAlienSound(type) {
-            initAudio();
+        async function playAlienSound(type) {
+            if (!userInteracted) return;
+            await initAudio();
             if (type === 'connect') {
-                playTone(400, 100);
-                setTimeout(() => playTone(600, 100), 100);
-                setTimeout(() => playTone(800, 150), 200);
+                await playTone(400, 100);
+                setTimeout(async () => await playTone(600, 100), 100);
+                setTimeout(async () => await playTone(800, 150), 200);
             } else if (type === 'disconnect') {
-                playTone(800, 100);
-                setTimeout(() => playTone(600, 100), 100);
-                setTimeout(() => playTone(400, 150), 200);
+                await playTone(800, 100);
+                setTimeout(async () => await playTone(600, 100), 100);
+                setTimeout(async () => await playTone(400, 150), 200);
             } else if (type === 'receive') {
-                playTone(1200, 50);
-                setTimeout(() => playTone(1400, 50), 50);
+                await playTone(1200, 50);
+                setTimeout(async () => await playTone(1400, 50), 50);
             } else if (type === 'transmit') {
-                playTone(600, 80, 'square');
+                await playTone(600, 80, 'square');
             }
         }
 
@@ -222,22 +239,21 @@
                 state.connected = true;
                 statusOrb.className = 'neural-orb connected';
                 statusText.textContent = 'NEURAL LINK ACTIVE';
-                
+
                 state.client.subscribe(`cyborg/${state.currentChannel}/audio`);
                 state.client.subscribe(`cyborg/${state.currentChannel}/presence`);
-                
+
                 state.client.publish(`cyborg/${state.currentChannel}/presence`, JSON.stringify({
                     type: 'join',
                     callsign: state.callsign,
                     timestamp: Date.now()
                 }));
-                
+
                 addMessage('SYSTEM', 'Connected to CYBORG network', 'system');
                 playAlienSound('connect');
             });
 
             state.client.on('error', (err) => {
-                console.error('MQTT Error:', err);
                 statusText.textContent = 'NEURAL LINK ERROR';
             });
 
@@ -260,10 +276,8 @@
                             playReceivedAudio(data.audio);
                             addMessage(data.callsign, 'Voice transmission received', 'incoming');
                             playAlienSound('receive');
-                            animateVisualizer(true);
-                            setTimeout(() => animateVisualizer(false), 2000);
                         } else {
-                            console.error('Invalid audio data received');
+                            // Invalid audio data received
                         }
                     } else if (topic.endsWith('/presence') && data.callsign !== state.callsign) {
                         if (data.type === 'join') {
@@ -271,7 +285,7 @@
                         }
                     }
                 } catch (e) {
-                    console.error('Message parse error:', e);
+                    // Message parse error
                 }
             });
         }
@@ -279,8 +293,12 @@
         // Audio recording
         async function startRecording() {
             try {
-                initAudio();
+                await initAudio();
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioContext.createMediaStreamSource(stream);
+                recordingAnalyser = audioContext.createAnalyser();
+                recordingAnalyser.fftSize = 256;
+                source.connect(recordingAnalyser);
                 state.mediaRecorder = new MediaRecorder(stream);
                 state.audioChunks = [];
 
@@ -290,6 +308,7 @@
 
                 state.mediaRecorder.onstop = async () => {
                     const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
+                    console.log('Audio blob size:', audioBlob.size);
                     const reader = new FileReader();
                     reader.onloadend = () => {
                         const base64Audio = reader.result.split(',')[1];
@@ -302,8 +321,12 @@
                 state.mediaRecorder.start();
                 state.transmitting = true;
                 updateTransmitState(true);
+                visualizer.classList.add('receiving');
             } catch (err) {
-                console.error('Error accessing microphone:', err);
+                // Error accessing microphone
+                // Microphone access failed, resetting transmitting state
+                state.transmitting = false;
+                updateTransmitState(false);
                 addMessage('ERROR', 'Microphone access denied', 'system');
             }
         }
@@ -313,6 +336,11 @@
                 state.mediaRecorder.stop();
                 state.transmitting = false;
                 updateTransmitState(false);
+                visualizer.classList.remove('receiving');
+                if (recordingAnalyser) {
+                    recordingAnalyser.disconnect();
+                    recordingAnalyser = null;
+                }
             }
         }
 
@@ -332,15 +360,54 @@
         }
 
         function playReceivedAudio(base64Audio) {
+            if (!userInteracted) {
+                return;
+            }
+            console.log('Attempting to play received audio, base64 length:', base64Audio.length);
             const audio = new Audio('data:audio/webm;base64,' + base64Audio);
+            console.log('Audio src set, duration:', audio.duration, 'readyState:', audio.readyState);
             audio.volume = state.volume;
+            audio.style.display = 'none';
+            document.body.appendChild(audio);
+            state.activeAudios.push(audio);
             audio.onended = () => {
+                audio.remove();
                 pttButton.classList.remove('receiving');
-                Array.from(energyWaves).forEach(wave => wave.classList.remove('receiving'));
+                visualizer.classList.remove('receiving');
+                state.playing = false;
+                transmissionStatus.innerHTML = '◇ AWAITING SIGNAL ◇';
+                transmissionStatus.style.color = 'rgba(0, 255, 204, 0.4)';
+                animateVisualizer(false);
+                // Array.from(energyWaves).forEach(wave => wave.classList.remove('receiving'));
+                state.activeAudios = state.activeAudios.filter(a => a !== audio);
+            };
+            audio.onerror = (e) => {
+                audio.remove();
+                state.activeAudios = state.activeAudios.filter(a => a !== audio);
             };
             pttButton.classList.add('receiving');
-            Array.from(energyWaves).forEach(wave => wave.classList.add('receiving'));
-            audio.play().catch(e => console.error('Playback error:', e));
+            visualizer.classList.add('receiving');
+            state.playing = true;
+            transmissionStatus.innerHTML = '◆ RECEIVING SIGNAL ◆';
+            transmissionStatus.style.color = 'var(--alien-energy)';
+            animateVisualizer(true, audio);
+            // Array.from(energyWaves).forEach(wave => wave.classList.add('receiving'));
+            audio.play().then(() => {
+                console.log('Received audio playback started successfully');
+            }).catch(e => {
+                console.error('Received audio playback failed:', e);
+                // Playback error
+                // Audio play failed, cleaning up
+                // Reset state if playback fails
+                pttButton.classList.remove('receiving');
+                visualizer.classList.remove('receiving');
+                state.playing = false;
+                transmissionStatus.innerHTML = '◇ AWAITING SIGNAL ◇';
+                transmissionStatus.style.color = 'rgba(0, 255, 204, 0.4)';
+                animateVisualizer(false);
+                audio.remove();
+                state.activeAudios = state.activeAudios.filter(a => a !== audio);
+            });
         }
 
         function updateTransmitState(isTransmitting) {
@@ -351,7 +418,7 @@
                 transmissionStatus.style.color = 'var(--alien-warning)';
                 playAlienSound('transmit');
                 animateVisualizer(true);
-                
+
                 Array.from(energyWaves).forEach(wave => wave.classList.add('active'));
             } else {
                 pttButton.classList.remove('active');
@@ -359,16 +426,67 @@
                 transmissionStatus.innerHTML = '◇ AWAITING SIGNAL ◇';
                 transmissionStatus.style.color = 'rgba(0, 255, 204, 0.4)';
                 animateVisualizer(false);
-                
+
                 Array.from(energyWaves).forEach(wave => wave.classList.remove('active'));
             }
         }
 
         let animationFrame;
-        function animateVisualizer(active) {
+        let analyser;
+        let dataArray;
+        let recordingAnalyser;
+        function animateVisualizer(active, audioElement = null) {
             const bars = visualizer.querySelectorAll('.wave-bar');
-            
-            if (active) {
+
+            if (active && audioElement) {
+                // Real-time visualization for receiving
+                initAudio();
+                const source = audioContext.createMediaElementSource(audioElement);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+
+                const animate = () => {
+                    if (!state.transmitting && !state.playing) {
+                        bars.forEach(bar => bar.style.height = '8px');
+                        return;
+                    }
+                    analyser.getByteFrequencyData(dataArray);
+                    bars.forEach((bar, i) => {
+                        const value = dataArray[i * 2] || 0;
+                        const height = (value / 255) * 45 + 8;
+                        bar.style.height = height + 'px';
+                    });
+                    animationFrame = requestAnimationFrame(animate);
+                };
+                animate();
+            } else if (active && recordingAnalyser) {
+                // Real-time visualization for recording
+                analyser = recordingAnalyser;
+                if (!dataArray) {
+                    const bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+                }
+
+                const animate = () => {
+                    if (!state.transmitting && !state.playing) {
+                        bars.forEach(bar => bar.style.height = '8px');
+                        return;
+                    }
+                    analyser.getByteFrequencyData(dataArray);
+                    bars.forEach((bar, i) => {
+                        const value = dataArray[i * 2] || 0;
+                        const height = (value / 255) * 45 + 8;
+                        bar.style.height = height + 'px';
+                    });
+                    animationFrame = requestAnimationFrame(animate);
+                };
+                animate();
+            } else if (active) {
+                // Random animation for transmitting
                 const animate = () => {
                     if (!state.transmitting && !state.playing) {
                         bars.forEach(bar => bar.style.height = '8px');
@@ -383,6 +501,14 @@
                 animate();
             } else {
                 cancelAnimationFrame(animationFrame);
+                if (analyser) {
+                    analyser.disconnect();
+                    analyser = null;
+                }
+                if (recordingAnalyser) {
+                    recordingAnalyser.disconnect();
+                    recordingAnalyser = null;
+                }
             }
         }
 
@@ -464,13 +590,25 @@
                 showNotification('UPI COPIED');
                 playAlienSound('receive');
             } catch (err) {
-                console.error('Failed to copy: ', err);
                 showNotification('COPY FAILED');
             }
         });
 
         // Initialize
         connectMQTT();
+
+        document.addEventListener('click', () => {
+            console.log('User clicked, setting userInteracted to true');
+            userInteracted = true;
+            if (audioContext && audioContext.state === 'suspended') {
+                console.log('Resuming AudioContext on click');
+                audioContext.resume().then(() => {
+                    console.log('AudioContext resumed on click, state:', audioContext.state);
+                }).catch(err => {
+                    console.error('Failed to resume on click:', err);
+                });
+            }
+        });
 
         // Simulate active users
         setInterval(() => {
